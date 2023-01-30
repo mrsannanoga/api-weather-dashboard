@@ -86,11 +86,10 @@ clearBtn.on("click", function () {
     renderHistoryButtons();
 });
 
+// set current day variable
+var currentDay = moment().format("DD/MM/YYYY");
 //weather data request
 function displayWeather() {
-
-    // var myClickBtn = $(event.target);
-    // var cityName = myClickBtn.cityInput;
 
     var cityInput = searchInput.val();
     var apiKey = "668f0e3927f32d39fd3217f656c36bbd";
@@ -101,7 +100,39 @@ function displayWeather() {
         method: "GET"
     }).then(function (response) {
         console.log(response);
-    })
+    
+    
+    var todayWeather = $("#today");
+    todayWeather.addClass("card card-body");
+    var forecastFor5 = $("#forecast");
+    todayWeather.empty();
+    forecastFor5.empty();
+
+    var cityName =$("<h3>"); 
+    var temp = $("<div>")    
+    var wind = $("<div>")    
+    var humidity = $("<div>")   
+    var icon =$("<img>")
+    icon.attr("src", "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png");  
+    icon.css({
+        "width" : "20%",
+        "height" : "20%"
+    });
+
+
+    todayWeather.append(cityName);
+    todayWeather.append(icon);
+    todayWeather.append(temp); 
+    todayWeather.append(wind);
+    todayWeather.append(humidity);
+
+    cityName.text(response.name + " " + "("+ currentDay + ")");
+    temp.text("Temperature: " + Math.round(response.main.temp - 273.15) + " °C");
+    wind.text("Wind: " + response.wind.speed + " KPH");
+    humidity.text("Humidity: " + response.main.humidity + "%");
+   
+})
+
 
 
 
