@@ -38,11 +38,12 @@ searchBtn.on("click", function (event) {
 
     event.preventDefault();
     var cityInput = searchInput.val();
+    displayWeather(cityInput);
+    displayForecast(cityInput);
     citiesHistory.push(cityInput);
     localStorage.setItem("City History", JSON.stringify(citiesHistory));
 
     renderHistoryButtons();
-    displayWeather(cityInput);
 
 });
 
@@ -74,6 +75,7 @@ function renderHistoryButtons() {
             event.preventDefault();
 
             displayWeather(historyButton.attr("id"));
+            displayForecast(historyButton.attr("id"))
         });
         // var addedHistoryButton = $(".history-button");
         // addedHistoryButton.on("click", displayWeather(addedHistoryButton.text));
@@ -129,15 +131,22 @@ function displayWeather(cityName) {
 
         var todayWeather = $("#today");
         todayWeather.addClass("card card-body");
-        var forecastFor5 = $("#forecast");
         todayWeather.empty();
-        forecastFor5.empty();
+
 
         var cityName = $("<h3>");
-        var temp = $("<div>")
-        var wind = $("<div>")
-        var humidity = $("<div>")
-        var icon = $("<img>")
+        cityName.text(response.name + " " + "(" + currentDay + ")");
+
+        var temp = $("<div>");
+        temp.text("Temperature: " + Math.round(response.main.temp - 273.15) + " °C");
+
+        var wind = $("<div>");
+        wind.text("Wind: " + response.wind.speed + " KPH");
+
+        var humidity = $("<div>");
+        humidity.text("Humidity: " + response.main.humidity + "%");
+
+        var icon = $("<img>");
         icon.attr("src", "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png");
         icon.css({
             "width": "20%",
@@ -145,25 +154,92 @@ function displayWeather(cityName) {
         });
 
 
-        todayWeather.append(cityName);
-        todayWeather.append(icon);
-        todayWeather.append(temp);
-        todayWeather.append(wind);
-        todayWeather.append(humidity);
 
-        cityName.text(response.name + " " + "(" + currentDay + ")");
-        temp.text("Temperature: " + Math.round(response.main.temp - 273.15) + " °C");
-        wind.text("Wind: " + response.wind.speed + " KPH");
-        humidity.text("Humidity: " + response.main.humidity + "%");
+
+        todayWeather.append(cityName, icon, temp, wind, humidity);
+
+
 
     })
 
-
-
-
-
 };
 
+function displayForecast(cityName) {
+
+    var apiKey = "668f0e3927f32d39fd3217f656c36bbd";
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey;
+
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function (response) {
+        console.log(response);
+
+        var forecastFor5 = $("#forecast");
+        forecastFor5.empty();
+
+        var forecastHeading = $("<h4>");
+        forecastHeading.text("5-Day Forecast");
+        forecastHeading.addClass("col-12");
+        forecastFor5.append(forecastHeading);
+
+
+
+        for (var i = 0; i < 5; i++) {
+
+            var forecastIndex = i * 8 + 4;  //to find all needed data for 5 days each only targeting 12pm 
+
+            var forecastCard = $("<div>");
+            forecastCard.addClass("col-md-2 card forecast m-2");
+
+
+            var forecastDate = $("<h5>")
+            forecastDate.text(moment().add(i + 1, "days").format("DD/MM/YYYY"))
+
+
+
+
+            var forecastIcon = $("<img>");
+            forecastIcon.attr("src", "https://openweathermap.org/img/wn/" + response.list[forecastIndex].weather[0].icon + "@2x.png");
+
+            var forecastTemp = $("<div>");
+            forecastTemp.text("Temperature: " + Math.round(response.list[forecastIndex].main.temp - 273.15) + " °C");
+
+            var forecastWind = $("<div>");
+            forecastWind.text("Wind: " + response.list[forecastIndex].wind.speed + " KPH");
+
+            var forecastHumidity = $("<div>");
+            forecastHumidity.text("Humidity: " + response.list[forecastIndex].main.humidity + "%")
+
+
+
+
+
+            forecastCard.append(forecastDate, forecastIcon, forecastTemp, forecastWind, forecastHumidity);
+
+
+            forecastFor5.append(forecastCard);
+
+        }
+
+
+
+        //     var forecastDate = response.list[i];
+
+        // }
+        //     var dayOne = $("<h5>");
+        //     var forecastIcon = $("<img>");
+        //     forecastIcon.attr("src", "https://openweathermap.org/img/wn/" + response.list[i].weather[0].icon + "@2x.png");
+        //     forecastIcon.css({
+        //         "width": "10%",
+        //         "height": "10%"
+        //     });
+        //     var forecastTemp = $("<div>");
+        //     var forecastWind = $("<div>");
+        //     var forecastHumidity = $("<div>");
+    }
+    )
+};
 //search click event to display weather
 //searchBtn.on("click", displayWeather());
 
