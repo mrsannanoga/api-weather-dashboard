@@ -1,4 +1,6 @@
-//change search to search icon
+//CHANGE BASIC WEBPAGE STYLE FOR ASIDE ELEMENTS AND HEADER
+
+//change "search" to search icon
 var searchBtn = $("#search-button");
 searchBtn.text("");
 searchBtn.removeClass("search-button");
@@ -25,90 +27,67 @@ var header = $("header");
 header.css("background-image", 'url("images/clouds.jpg")');
 
 //add clear button
-
 var clearBtn = $("<button>")
 clearBtn.attr("id", "clear-button");
 clearBtn.attr("class", "btn btn-outline-primary mb-3");
 clearBtn.text("Clear history");
-
 $("aside").append(clearBtn);
 
-// search button event listener for buiding history buttons, store data in local storage
+
+// WEBPAGE FUNCTIONS AND EVENT LISTENERS
+
+var cities = JSON.parse(localStorage.getItem("City History")) || [];
+var historyList = $("#history")
+
+// search button event listener to store data in local storage
 searchBtn.on("click", function (event) {
 
     event.preventDefault();
+
     var cityInput = searchInput.val();
+    cities.push(cityInput);
+    localStorage.setItem("City History", JSON.stringify(cities));
+
+
     displayWeather(cityInput);
     displayForecast(cityInput);
-    citiesHistory.push(cityInput);
-    localStorage.setItem("City History", JSON.stringify(citiesHistory));
-
     renderHistoryButtons();
 
 });
 
 //render history buttons
-var cityInput = searchInput.val();
-//var citiesHistory = [];
-var citiesHistory = JSON.parse(localStorage.getItem("City History")) || [];   //check this again, to make buttons seen after refreshing page
-var historyList = $("#history");
 
 function renderHistoryButtons() {
 
-    $("#history").empty();
+    historyList.empty();
 
-
-    for (var i = 0; i < citiesHistory.length; i++) {
-
+    for (var i = 0; i < cities.length; i++) {
 
         var newHistoryButton = $("<button>");
-        newHistoryButton.text(citiesHistory[i]);
-        newHistoryButton.attr("id", citiesHistory[i]);
+        newHistoryButton.text(cities[i]);
+        newHistoryButton.attr("id", cities[i]);
         newHistoryButton.addClass("btn btn-primary history-button");
         newHistoryButton.css("margin-bottom", "5px");
 
-
-
-
-        var historyButton = newHistoryButton;
-        historyButton.on("click", function (event) {
-            event.preventDefault();
-
-            displayWeather(historyButton.attr("id"));
-            displayForecast(historyButton.attr("id"))
-        });
-        // var addedHistoryButton = $(".history-button");
-        // addedHistoryButton.on("click", displayWeather(addedHistoryButton.text));
-        // newHistoryButton.on("click", function () {
-
-        //     displayWeather(newHistoryButton.text());
-        // });
-        historyList.append(historyButton);
-
+        historyList.append(newHistoryButton);
     }
 
 };
 //call function to display history buttons after page refresh
 renderHistoryButtons();
 
-// var historyButton = $(".history-button");
-// historyButton.on("click", function (event) {
-//     event.preventDefault();
+// history buttons event listener
 
-//     displayWeather(historyButton.attr("id"));
-// });
-// historyList.on("click", "button", function(event){
-//     event.preventDefault();
+historyList.on("click", "button", function (event) {
+    var buttonName = $(event.target).attr("id");
+            displayWeather(buttonName);
+            displayForecast(buttonName);
+        });
 
-//  displayWeather(this.text());
-// })
-
-
-
-//clear button function
+//clear button event listener
 clearBtn.on("click", function () {
     localStorage.clear();
-    citiesHistory = [];
+    cities = [];
     renderHistoryButtons();
 });
 
@@ -118,7 +97,6 @@ var currentDay = moment().format("DD/MM/YYYY");
 //weather data request
 function displayWeather(cityName) {
 
-    //var cityInput = searchInput.val();
     var apiKey = "668f0e3927f32d39fd3217f656c36bbd";
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + apiKey;
 
@@ -194,7 +172,8 @@ function displayForecast(cityName) {
 
 
             var forecastDate = $("<h5>")
-            forecastDate.text(moment().add(i + 1, "days").format("DD/MM/YYYY"))
+            forecastDate.text(moment().add(i + 1, "days").format("DD/MM/YYYY"));
+            forecastDate.css("padding-top", "10px");
 
 
 
@@ -222,42 +201,5 @@ function displayForecast(cityName) {
 
         }
 
-
-
-        //     var forecastDate = response.list[i];
-
-        // }
-        //     var dayOne = $("<h5>");
-        //     var forecastIcon = $("<img>");
-        //     forecastIcon.attr("src", "https://openweathermap.org/img/wn/" + response.list[i].weather[0].icon + "@2x.png");
-        //     forecastIcon.css({
-        //         "width": "10%",
-        //         "height": "10%"
-        //     });
-        //     var forecastTemp = $("<div>");
-        //     var forecastWind = $("<div>");
-        //     var forecastHumidity = $("<div>");
-    }
-    )
+    })
 };
-//search click event to display weather
-//searchBtn.on("click", displayWeather());
-
-//history button event listener 
-
-// var addedHistoryButton = $(".history-button");
-// addedHistoryButton.on("click", displayWeather(addedHistoryButton.text));
-
-//$(".history-button").on("click", displayWeather(this.val()));
-// $(".history-button").on("click", function () {
-//     cityInput = this.attr("id")
-//     displayWeather();
-// });
-
-
-//retrieve history buttons after refresh
-// $(document).ready(function () {
-//     localStorage.getItem("City History");
-//     renderHistoryButtons();
-// });
-
