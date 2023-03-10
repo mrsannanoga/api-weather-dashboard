@@ -3,7 +3,7 @@
 Weather Dashboard is a simple web application which enables to search for a city to get both, current weather and 5-day forecast. Cities that were searched by the user automatically goes to the list of stored search imputs which dislays as buttons. These are able to use later to go back to weather for city that was looked for previously. 
 
 
-The webpage is available live on [here](https://mrsannanoga.github.io/java-code-quiz/).
+The webpage is available live on [here](https://mrsannanoga.github.io/api-weather-dashboard/).
 
 
 See below video to find out how the webpage works.
